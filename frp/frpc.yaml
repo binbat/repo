@@ -1,0 +1,25 @@
+name: "frpc"
+arch: "${NFPM_ARCH}"
+platform: "linux"
+version: "${NFPM_VERSION}"
+release: "${NFPM_RELEASE}"
+prerelease: "${NFPM_PRERELEASE}"
+section: "utility"
+priority: "optional"
+maintainer: "BinBat Ltd <hey@binbat.com>"
+description: |
+  A fast reverse proxy to help you expose a local server behind a NAT or firewall to the internet.
+vendor: "BinBat"
+homepage: "https://github.com/fatedier/frp"
+license: "APL-2.0"
+contents:
+  - src: ./src/frpc
+    dst: /usr/bin/frpc
+  - src: ./src/frpc.toml
+    dst: /etc/frp/frpc.toml
+    type: config
+  - src: ./frpc.service
+    dst: /usr/lib/systemd/system/frpc.service
+  - src: ./frpc@.service
+    dst: /usr/lib/systemd/system/frpc@.service
+
