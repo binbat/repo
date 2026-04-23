@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  release:
+    types:
+      - 'published'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Install nFPM
+        run: |
+            echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
+            sudo apt update
+            sudo apt install nfpm
+
+      - name: Get name version
+        run: |
+          TAG=${GITHUB_REF_NAME}
+          NAME=$(echo $TAG | cut -d'-' -f2)
+          VERSION=$(echo $TAG | cut -d'-' -f3 | sed 's/^v//')
+          echo "TAG=${TAG}" >> $GITHUB_ENV
+          echo "NAME=${NAME}" >> $GITHUB_ENV
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+
+      - name: Build ${{ env.NAME }} ${{ env.VERSION }}
+        run: |
+          mkdir -p target
+          pushd ${{ env.NAME }}
+          make ARCH=amd64
+          cp *deb ../target/
+          make clean ARCH=amd64
+          make ARCH=arm64
+          cp *deb ../target/
+          make clean ARCH=arm64
+          popd
+      - name: Artifact Upload Binary
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.NAME }}_${{ env.VERSION }}
+          path: |
+            target/*.deb
+
+      - name: Upload release archive nFPM package
+        shell: bash
+        if: ${{ github.ref_type == 'tag' }}
+        run: gh release upload ${{ env.TAG }} target/*.deb
+        env:
+          GH_TOKEN: ${{ github.token }}
+
