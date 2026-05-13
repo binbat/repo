@@ -1,0 +1,35 @@
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1036804
+# https://github.com/shadowsocks/shadowsocks-rust/tree/master/debian
+name: "shadowsocks-rust"
+arch: "${NFPM_ARCH}"
+platform: "linux"
+version: "${NFPM_VERSION}"
+release: "${NFPM_RELEASE}"
+prerelease: "${NFPM_PRERELEASE}"
+section: "utility"
+priority: "optional"
+maintainer: "BinBat Ltd <hey@binbat.com>"
+description: |
+   A Rust port of shadowsocks.
+vendor: "BinBat"
+homepage: "https://github.com/shadowsocks/shadowsocks-rust"
+license: "MIT"
+contents:
+  - src: ./src/sslocal
+    dst: /usr/bin/sslocal
+  - src: ./src/ssmanager
+    dst: /usr/bin/ssmanager
+  - src: ./src/ssserver
+    dst: /usr/bin/ssserver
+  - src: ./src/ssservice
+    dst: /usr/bin/ssservice
+  - src: ./src/ssurl
+    dst: /usr/bin/ssurl
+  - src: ./src/config.json
+    dst: /etc/shadowsocks-rust/config.json
+    type: config
+  - src: ./src/shadowsocks-rust-local@.service
+    dst: /usr/lib/systemd/system/shadowsocks-rust-local@.service
+  - src: ./src/shadowsocks-rust-server@.service
+    dst: /usr/lib/systemd/system/shadowsocks-rust-server@.service
+
